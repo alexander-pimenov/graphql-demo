@@ -1,0 +1,50 @@
+server:
+  port: 8181
+
+spring:
+  application:
+    name: graphql-demo
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:6433/graphqldb
+    username: user
+    password: password
+    continue-on-error: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+#      ddl-auto: update  # Используем автоматическое создание схемы Hibernate, если нет миграций в Flyway. Это для отлаживания.
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+  flyway:
+    enabled: true
+#    enabled: false  # Временно отключаем Flyway, если в этом нужна необходимость
+    baseline-on-migrate: true
+    baseline-version: 0
+    # Явно указываем поддержку PostgreSQL
+    postgresql:
+      transactional-lock: false
+
+# Миграция БД
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
+    schema:
+      locations: classpath:graphql/
+
+logging:
+  level:
+    com.example.graphqldemo: DEBUG
+    org.springframework.graphql: DEBUG
+    org.flywaydb: DEBUG  # Добавляем логирование Flyway для отладки
+
+#  datasource:
+#    url: jdbc:h2:mem:testdb
+#    username: sa
+#    password: sa
+#    driver-class-name: org.h2.Driver

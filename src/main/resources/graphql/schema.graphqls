@@ -1,0 +1,134 @@
+# schema.graphqls
+
+# ⚠️ ВАЖНО: Порядок определения типов не имеет значения!
+# GraphQL собирает все определения в единую схему
+
+# ---------- ОСНОВНЫЕ ТИПЫ ДАННЫХ ----------
+
+type Author {
+    id: ID!                 # ID! - обязательное поле (non-null), специальный тип для идентификаторов (сериализуется как String)
+    name: String!           # String! - обязательное поле, обычные строки
+    email: String!          # Email тоже обязательный
+    books: [Book!]!         # Список книг: сам список обязателен (!) и каждый элемент списка тоже обязателен (!)
+}
+
+"""
+Represents a book in the library system
+"""
+type Book {
+    """
+    The unique identifier of the book
+    """
+    id: ID!                 # ID - обязательное поле (non-null), специальный тип для идентификаторов (сериализуется как String)
+    """
+    The title of the book (must be unique within author)
+    """
+    title: String!          # Обычные строки, обязательное поле
+    """
+    International Standard Book Number
+    Format: 978-5-389-00001-2
+    """
+    isbn: String            # Nullable поле (может быть null)
+    publishedYear: Int      # Int может быть null
+    author: Author!         # Связь с автором (обязательна)
+}
+
+# ---------- ТОЧКИ ВХОДА В API ----------
+
+# Query - все операции чтения (аналог GET в REST)
+type Query {
+    # Book queries
+    bookById(id: ID!): Book                 # Может вернуть Book или null
+    booksByTitle(title: String!): [Book!]!  # Всегда возвращает список (может быть пустым)
+    allBooks: [Book!]!                      # Все книги, всегда возвращает список (может быть пустым)
+
+    # Author queries
+    authorById(id: ID!): Author
+    allAuthors: [Author!]!
+    authorByEmail(email: String!): Author
+}
+
+# Mutation - все операции изменения (аналог POST/PUT/DELETE)
+type Mutation {
+    # Book mutations
+    createBook(
+        title: String!,         # Обязательный параметр
+        isbn: String,           # Необязательный параметр
+        publishedYear: Int,     # Необязательный параметр
+        authorId: ID!           # Обязательный ID автора
+    ): Book!                    # Всегда возвращает созданную книгу
+
+    updateBook(
+        id: ID!,
+        title: String,
+        isbn: String,
+        publishedYear: Int
+    ): Book!                    # Всегда возвращает обновленную книгу
+
+    deleteBook(id: ID!): Boolean!   # Возвращает true/false
+
+    # Author mutations
+    createAuthor(name: String!, email: String!): Author!
+    updateAuthor(id: ID!, name: String, email: String): Author!
+    deleteAuthor(id: ID!): Boolean!
+}
+
+# ---------- ДОПОЛНИТЕЛЬНЫЕ ВОЗМОЖНОСТИ ----------
+
+# Input Types - для сложных входных параметров
+input BookInput {
+    title: String!
+    isbn: String
+    publishedYear: Int
+    authorId: ID!
+}
+
+input AuthorInput {
+    name: String!
+    email: String!
+}
+
+# Enum - перечисления
+enum BookGenre {
+    FICTION
+    NON_FICTION
+    SCIENCE
+    HISTORY
+    BIOGRAPHY
+}
+
+# Interface - общие поля для разных типов
+interface SearchResult {
+    id: ID!
+    title: String!
+}
+
+type Movie implements SearchResult {
+    id: ID!
+    title: String!
+    director: String!
+    duration: Int
+}
+
+# Union - объединение разных типов
+union Media = Book | Movie
+
+# Query с использованием новых типов
+extend type Query {
+    search(term: String!): [SearchResult!]!
+    mediaById(id: ID!): Media
+    booksByGenre(genre: BookGenre!): [Book!]!
+}
+
+# Subscription - для real-time обновлений (websocket)
+type Subscription {
+    bookAdded: Book!
+    bookUpdated: Book!
+}
+
+#Правила:
+#
+#! после типа   - поле всегда должно иметь значение
+#[Type]!        - сам список обязателен, но элементы могут быть null
+#[Type!]        - список может быть null, но элементы в нем обязательны
+#[Type!]!       - и список, и все элементы обязательны
