@@ -319,7 +319,7 @@ public class BookAuthorController {
      * Этот метод будет вызван для МНОЖЕСТВА книг
      * Spring определяет по наличию List<Book> в параметрах.
      */
-    //@BatchMapping(field = "author")
+    //@BatchMapping(field = "author") //TODO с этим стоит еще попрактиковаться и разобраться.
     @BatchMapping
     public Map<Book, Author> getAuthorBatch(List<Book> books) {
         log.info("Batch loading authors for {} books", books.size());
