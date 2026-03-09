@@ -8,11 +8,12 @@
 		<version>3.5.10</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.example</groupId>
 	<artifactId>graphql-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>graphql-demo</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Demo project for GraphQL with Spring Boot and Testcontainers</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -28,9 +29,15 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<flyway.version>10.20.0</flyway.version> <!-- Обновленная версия Flyway -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Версии библиотек -->
+		<testcontainers.version>1.20.4</testcontainers.version>
 	</properties>
 	<dependencies>
+		<!-- Data JPA для работы с БД -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -72,16 +79,60 @@
 			<version>${flyway.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- ========== ТЕСТОВЫЕ ЗАВИСИМОСТИ ========== -->
+		<!-- Spring Boot Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- GraphQL тестирование -->
 		<dependency>
 			<groupId>org.springframework.graphql</groupId>
 			<artifactId>spring-graphql-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Testcontainers - основной модуль -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Testcontainers - JUnit 5 интеграция -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Testcontainers - поддержка Spring Boot (опционально, упрощает настройку) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Testcontainers - PostgreSQL -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Для тестирования реактивных приложений (если используете WebFlux) -->
+		<!-- <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+
+		<!-- AssertJ для более красивых assert'ов (уже включен в spring-boot-starter-test) -->
+		<!-- H2 для тестов НЕ добавляем! -->
+
 	</dependencies>
 
 	<build>
@@ -112,5 +163,13 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- Репозитории (обычно не нужны, но на всякий случай) -->
+	<!--<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>-->
 
 </project>

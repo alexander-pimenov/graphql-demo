@@ -22,7 +22,7 @@ spring:
 
   flyway:
     enabled: true
-#    enabled: false  # Временно отключаем Flyway, если в этом нужна необходимость
+#    enabled: false # так можно временно отключить Flyway, если в этом нужна необходимость
     baseline-on-migrate: true
     baseline-version: 0
     # Явно указываем поддержку PostgreSQL
